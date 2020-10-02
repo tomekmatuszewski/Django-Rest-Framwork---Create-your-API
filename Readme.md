@@ -1,6 +1,6 @@
 ## Django Rest Framwork - Create Simple API
 
-Based on [DjangoRest](https://www.django-rest-framework.org/tutorial/quickstart/)
+Based on [DjangoRestFramework](https://www.django-rest-framework.org/tutorial/quickstart/)
 
 ![slt text](screens/rest.png)
 

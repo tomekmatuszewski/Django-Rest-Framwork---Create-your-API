@@ -19,4 +19,5 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = ["id", "title", "author", "email"]
+        # fields = ["id", "title", "author", "email"]
+        fields = '__all__'

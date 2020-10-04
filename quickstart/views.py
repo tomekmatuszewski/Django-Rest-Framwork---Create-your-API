@@ -1,13 +1,14 @@
 from django.contrib.auth.models import Group, User
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
 from rest_framework import permissions, viewsets
-from rest_framework.decorators import api_view
-from rest_framework.parsers import JSONParser
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import generics
+from rest_framework import mixins
 
 from quickstart.serializers import (ArticleSerializer, GroupSerializer,
                                     UserSerializer)
-
 from .models import Article
 
 
@@ -31,48 +32,26 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-@csrf_exempt
-def article_list(request):
+class ArticleGenericAPIView(generics.GenericAPIView, mixins.ListModelMixin,
+                            mixins.CreateModelMixin, mixins.UpdateModelMixin,
+                            mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
 
-    if request.method == "GET":
-        articles = Article.objects.all()
-        serializer = ArticleSerializer(articles, many=True)
-        return JsonResponse(serializer.data, safe=False)
+    serializer_class = ArticleSerializer
+    queryset = Article.objects.all()
+    lookup_field = 'id'
 
-    elif request.method == "POST":
-        data = JSONParser().parse(request)
-        serializer = ArticleSerializer(data=data)
+    def get(self, request, id=None):
+        if id:
+            return self.retrieve(request)
+        else:
+            return self.list(request)
 
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
+    def post(self, request):
+        return self.create(request)
 
-        return JsonResponse(serializer.errors, status=400)
+    def put(self, request, id=None):
+        return self.update(request, id)
 
+    def delete(self, request, id):
+        return self.destroy(request, id)
 
-@csrf_exempt
-def article_detail(request, pk):
-    try:
-        article = Article.objects.get(pk=pk)
-
-    except Article.DoesNotExist:
-        return HttpResponse(status=404)
-
-    if request.method == "GET":
-
-        serializer = ArticleSerializer(article)
-        return JsonResponse(serializer.data, safe=False)
-
-    elif request.method == "PUT":
-
-        data = JSONParser().parse(request)
-        serializer = ArticleSerializer(article, data=data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-
-    elif request.method == "DELETE":
-        article.delete()
-        return HttpResponse(status=204)

@@ -21,7 +21,7 @@ POST
  
 PUT
 
- ![slt_text](screens/postman3.png)
+ ![slt_text](screens/postman3put.png)
  
 DELETE
 

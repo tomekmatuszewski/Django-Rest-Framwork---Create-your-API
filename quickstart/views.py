@@ -1,11 +1,8 @@
 from django.contrib.auth.models import Group, User
-from django.http import HttpResponse
-from rest_framework import permissions, viewsets
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import mixins
+from rest_framework import permissions, viewsets
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from quickstart.serializers import (ArticleSerializer, GroupSerializer,
                                     UserSerializer)
@@ -39,6 +36,8 @@ class ArticleGenericAPIView(generics.GenericAPIView, mixins.ListModelMixin,
     serializer_class = ArticleSerializer
     queryset = Article.objects.all()
     lookup_field = 'id'
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, id=None):
         if id:
